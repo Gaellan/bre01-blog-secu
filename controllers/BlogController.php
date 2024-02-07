@@ -9,16 +9,34 @@ class BlogController extends AbstractController
 {
     public function home() : void
     {
-        $this->render("home", []);
+        $pm = new PostManager();
+        $cm = new CategoryManager();
+
+        $posts = $pm->findLatest();
+        $categories= $cm->findAll();
+
+        $this->render("home", [ "posts" => $posts, "categories" => $categories]);
     }
 
     public function category(string $categoryId) : void
     {
-        // si la catégorie existe
-        $this->render("category", []);
+        $cm = new CategoryManager();
 
-        // sinon
-        $this->redirect("index.php");
+        $category = $cm->findOne(intval($categoryId));
+
+
+        if($category !== null)
+        {
+            $pm = new PostManager();
+            $posts = $pm->findByCategory($category->getId());
+            $categories = $cm->findAll();
+
+            $this->render("category", ["category" => $category, "posts" => $posts, "categories" => $categories]);
+        }
+        else
+        {
+            $this->redirect("index.php");
+        }
     }
 
     public function post(string $postId) : void

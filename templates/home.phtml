@@ -3,53 +3,24 @@
 
     <h2 class="mt-5">Latest posts</h2>
     <ul class="row mt-5">
-        <li class="col-4 my-2">
-            <article class="card">
-                <header class="card-body">
-                    <h3 class="h5 card-title">Post Title</h3>
-                    <h4 class="h6 card-subtitle mb-2 text-body-secondary">Category Name</h4>
-                </header>
-                <section class="card-body">
-                    <p class="card-text">Post Excerpt</p>
-                    <a href="#" class="btn btn-primary">Post Link</a>
-                </section>
-            </article>
-        </li>
-        <li class="col-4 my-2">
-            <article class="card">
-                <header class="card-body">
-                    <h3 class="h5 card-title">Post Title</h3>
-                    <h4 class="h6 card-subtitle mb-2 text-body-secondary">Category Name</h4>
-                </header>
-                <section class="card-body">
-                    <p class="card-text">Post Excerpt</p>
-                    <a href="#" class="btn btn-primary">Post Link</a>
-                </section>
-            </article>
-        </li>
-        <li class="col-4 my-2">
-            <article class="card">
-                <header class="card-body">
-                    <h3 class="h5 card-title">Post Title</h3>
-                    <h4 class="h6 card-subtitle mb-2 text-body-secondary">Category Name</h4>
-                </header>
-                <section class="card-body">
-                    <p class="card-text">Post Excerpt</p>
-                    <a href="#" class="btn btn-primary">Post Link</a>
-                </section>
-            </article>
-        </li>
-        <li class="col-4 my-2">
-            <article class="card">
-                <header class="card-body">
-                    <h3 class="h5 card-title">Post Title</h3>
-                    <h4 class="h6 card-subtitle mb-2 text-body-secondary">Category Name</h4>
-                </header>
-                <section class="card-body">
-                    <p class="card-text">Post Excerpt</p>
-                    <a href="#" class="btn btn-primary">Post Link</a>
-                </section>
-            </article>
-        </li>
+        <?php
+            foreach($data["posts"] as $post)
+            {
+                ?>
+                <li class="col-4 my-2">
+                    <article class="card">
+                        <header class="card-body">
+                            <h3 class="h5 card-title"><?= $post->getTitle() ?></h3>
+                            <h4 class="h6 card-subtitle mb-2 text-body-secondary">Category Name</h4>
+                        </header>
+                        <section class="card-body">
+                            <p class="card-text"><?= $post->getExcerpt() ?></p>
+                            <a href="index.php?route=pos&post_id=<?= $post->getId() ?>" class="btn btn-primary">Read the post</a>
+                        </section>
+                    </article>
+                </li>
+        <?php
+            }
+        ?>
     </ul>
 </main>
