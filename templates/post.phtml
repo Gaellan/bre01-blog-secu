@@ -1,0 +1,48 @@
+<main id="post" class="container py-5 px-3">
+    <h1 class="mb-5 text-center">Secure Blog</h1>
+    <h2 class="mt-5 text-center"><?= $data["post"]->getTitle(); ?></h2>
+    <article class="py-5">
+        <?= $data["post"]->getContent(); ?>
+    </article>
+    <section class="my-3">
+        <h3>Comments</h3>
+        <ul class="list-group mt-4">
+            <?php
+                foreach($data["comments"] as $comment)
+                {
+                    ?>
+                <li class="list-group-item">
+                    <article>
+                        <h4><?= $comment->getUser()->getUsername(); ?></h4>
+                        <p>
+                            <?= $comment->getContent(); ?>
+                        </p>
+                    </article>
+                </li>
+            <?php
+                }
+            ?>
+        </ul>
+        <?php
+        if(isset($_SESSION["user"]))
+        {
+            ?>
+            <form action="index.php?route=check-comment" method="post">
+                <input type="hidden" name="csrf-token" id="csrf-token" value="<?= $_SESSION["csrf-token"] ?>" />
+                <input type="hidden" name="post-id" id="post-id" value="<?= $data["post"]->getId() ?>" />
+                <fieldset class="my-1">
+                    <label for="content" class="form-label">
+                        Comment
+                    </label>
+                    <textarea name="content" id="content" class="form-control">
+                </textarea>
+                </fieldset>
+                <fieldset>
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </fieldset>
+            </form>
+        <?php
+        }
+        ?>
+    </section>
+</main>

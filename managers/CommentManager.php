@@ -17,7 +17,7 @@ class CommentManager extends AbstractManager
         $um = new UserManager();
         $pm = new PostManager();
 
-        $query = $this->db->prepare('SELECT * FROM comments WHERE post_id:postId');
+        $query = $this->db->prepare('SELECT * FROM comments WHERE post_id=:postId');
         $parameters = [
             "postId" => $postId
         ];
