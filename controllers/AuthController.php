@@ -14,11 +14,49 @@ class AuthController extends AbstractController
 
     public function checkLogin() : void
     {
-        // si le login est valide => connecter puis rediriger vers la home
-        // $this->redirect("index.php");
 
-        // sinon rediriger vers login
-        // $this->redirect("index.php?route=login");
+        if(isset($_POST["email"]) && isset($_POST["password"]))
+        {
+            $tokenManager = new CSRFTokenManager();
+
+            if(isset($_POST["csrf-token"]) && $tokenManager->validateCSRFToken($_POST["csrf-token"]))
+            {
+                $um = new UserManager();
+                $user = $um->findByEmail($_POST["email"]);
+
+                if($user !== null)
+                {
+                    if(password_verify($_POST["password"], $user->getPassword()))
+                    {
+                        $_SESSION["user"] = $user->getId();
+
+                        unset($_SESSION["error-message"]);
+
+                        $this->redirect("index.php");
+                    }
+                    else
+                    {
+                        $_SESSION["error-message"] = "Invalid login information";
+                        $this->redirect("index.php?route=login");
+                    }
+                }
+                else
+                {
+                    $_SESSION["error-message"] = "Invalid login information";
+                    $this->redirect("index.php?route=login");
+                }
+            }
+            else
+            {
+                $_SESSION["error-message"] = "Invalid CSRF token";
+                $this->redirect("index.php?route=login");
+            }
+        }
+        else
+        {
+            $_SESSION["error-message"] = "Missing fields";
+            $this->redirect("index.php?route=login");
+        }
     }
 
     public function register() : void
@@ -28,11 +66,56 @@ class AuthController extends AbstractController
 
     public function checkRegister() : void
     {
-        // si le register est valide => connecter puis rediriger vers la home
-        // $this->redirect("index.php");
+        if(isset($_POST["username"]) && isset($_POST["email"])
+            && isset($_POST["password"]) && isset($_POST["confirm-password"]))
+        {
+            $tokenManager = new CSRFTokenManager();
+            if(isset($_POST["csrf-token"]) && $tokenManager->validateCSRFToken($_POST["csrf-token"]))
+            {
+                if($_POST["password"] === $_POST["confirm-password"])
+                {
+                    $um = new UserManager();
+                    $user = $um->findByEmail($_POST["email"]);
 
-        // sinon rediriger vers register
-        // $this->redirect("index.php?route=register");
+                    if($user === null)
+                    {
+                        $username = htmlspecialchars($_POST["username"]);
+                        $email = htmlspecialchars($_POST["email"]);
+                        $password = password_hash($_POST["password"], PASSWORD_BCRYPT);
+                        $user = new User($username, $email, $password);
+
+                        $um->create($user);
+
+                        $_SESSION["user"] = $user->getId();
+
+                        unset($_SESSION["error-message"]);
+
+                        $this->redirect("index.php");
+                    }
+                    else
+                    {
+                        $_SESSION["error-message"] = "User already exists";
+                        $this->redirect("index.php?route=register");
+                    }
+
+                }
+                else
+                {
+                    $_SESSION["error-message"] = "The passwords do not match";
+                    $this->redirect("index.php?route=register");
+                }
+            }
+            else
+            {
+                $_SESSION["error-message"] = "Invalid CSRF token";
+                $this->redirect("index.php?route=register");
+            }
+        }
+        else
+        {
+            $_SESSION["error-message"] = "Missing fields";
+            $this->redirect("index.php?route=register");
+        }
     }
 
     public function logout() : void

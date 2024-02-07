@@ -1,10 +1,21 @@
 <main id="login" class="container py-5 px-3">
+    <?php
+    if(isset($_SESSION["error-message"]))
+    {
+        ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <?= $_SESSION["error-message"] ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php
+    }
+    ?>
     <h1 class="mb-5">Secured Blog</h1>
 
     <h2 class="mt-5">Login</h2>
 
     <form action="index.php?route=check-login" method="post">
-        <input type="hidden" name="csrf-token" id="csrf-token" value="" />
+        <input type="hidden" name="csrf-token" id="csrf-token" value="<?= $_SESSION["csrf-token"] ?>" />
         <fieldset class="my-1">
             <label for="email" class="form-label">
                 Email
