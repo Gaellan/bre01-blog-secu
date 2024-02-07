@@ -74,30 +74,38 @@ class AuthController extends AbstractController
             {
                 if($_POST["password"] === $_POST["confirm-password"])
                 {
-                    $um = new UserManager();
-                    $user = $um->findByEmail($_POST["email"]);
+                    $password_pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s])[A-Za-z\d^\w\s]{8,}$/';
 
-                    if($user === null)
+                    if (preg_match($password_pattern, $_POST["password"]))
                     {
-                        $username = htmlspecialchars($_POST["username"]);
-                        $email = htmlspecialchars($_POST["email"]);
-                        $password = password_hash($_POST["password"], PASSWORD_BCRYPT);
-                        $user = new User($username, $email, $password);
+                        $um = new UserManager();
+                        $user = $um->findByEmail($_POST["email"]);
 
-                        $um->create($user);
+                        if($user === null)
+                        {
+                            $username = htmlspecialchars($_POST["username"]);
+                            $email = htmlspecialchars($_POST["email"]);
+                            $password = password_hash($_POST["password"], PASSWORD_BCRYPT);
+                            $user = new User($username, $email, $password);
 
-                        $_SESSION["user"] = $user->getId();
+                            $um->create($user);
 
-                        unset($_SESSION["error-message"]);
+                            $_SESSION["user"] = $user->getId();
 
-                        $this->redirect("index.php");
+                            unset($_SESSION["error-message"]);
+
+                            $this->redirect("index.php");
+                        }
+                        else
+                        {
+                            $_SESSION["error-message"] = "User already exists";
+                            $this->redirect("index.php?route=register");
+                        }
                     }
-                    else
-                    {
-                        $_SESSION["error-message"] = "User already exists";
+                    else {
+                        $_SESSION["error-message"] = "Password is not strong enough";
                         $this->redirect("index.php?route=register");
                     }
-
                 }
                 else
                 {
