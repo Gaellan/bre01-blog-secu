@@ -17,6 +17,11 @@ class UserManager extends AbstractManager
         return null;
     }
 
+    public function findOne(int $id) : ? User
+    {
+        return null;
+    }
+
     public function create(User $user) : void
     {
 
