@@ -15,6 +15,7 @@ class PostManager extends AbstractManager
     public function findLatest() : array
     {
         $um = new UserManager();
+        $cm = new CategoryManager();
 
         $query = $this->db->prepare('SELECT * FROM posts ORDER BY created_at LIMIT 4');
         $query->execute();
@@ -23,9 +24,11 @@ class PostManager extends AbstractManager
 
         foreach($result as $item)
         {
+            $categories = $cm->findByPost($item["id"]);
             $user = $um->findOne($item["author"]);
             $post = new Post($item["title"], $item["excerpt"], $item["content"], $user, DateTime::createFromFormat('Y-m-d H:i:s', $item["created_at"]));
             $post->setId($item["id"]);
+            $post->setCategories($categories);
             $posts[] = $post;
         }
 
@@ -35,6 +38,7 @@ class PostManager extends AbstractManager
     public function findOne(int $id) : ? Post
     {
         $um = new UserManager();
+        $cm = new CategoryManager();
 
         $query = $this->db->prepare('SELECT * FROM posts WHERE id=:id');
 
@@ -47,9 +51,11 @@ class PostManager extends AbstractManager
 
         if($result)
         {
+            $categories = $cm->findByPost($result["id"]);
             $user = $um->findOne($result["author"]);
             $post = new Post($result["title"], $result["excerpt"], $result["content"], $user, DateTime::createFromFormat('Y-m-d H:i:s', $result["created_at"]));
             $post->setId($result["id"]);
+            $post->setCategories($categories);
 
             return $post;
         }
@@ -60,6 +66,7 @@ class PostManager extends AbstractManager
     public function findByCategory(int $categoryId) : array
     {
         $um = new UserManager();
+        $cm = new CategoryManager();
 
         $query = $this->db->prepare('SELECT posts.* FROM posts JOIN posts_categories ON posts_categories.post_id=posts.id WHERE posts_categories.category_id=:category_id');
         $parameters = [
@@ -71,9 +78,11 @@ class PostManager extends AbstractManager
 
         foreach($result as $item)
         {
+            $categories = $cm->findByPost($item["id"]);
             $user = $um->findOne($item["author"]);
             $post = new Post($item["title"], $item["excerpt"], $item["content"], $user, DateTime::createFromFormat('Y-m-d H:i:s', $item["created_at"]));
             $post->setId($item["id"]);
+            $post->setCategories($categories);
             $posts[] = $post;
         }
 
